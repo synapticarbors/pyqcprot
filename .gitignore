@@ -1,0 +1,16 @@
+# OS generated files #
+######################
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Compiled source #
+###################
+*.so
+
+# Misc #
+########
+*.dcd
+*.dat
+build/
