@@ -47,9 +47,6 @@ $ python setup.py build_ext --inplace
 For further information on compiling cython extensions see:
 http://docs.cython.org/src/userguide/source_files_and_compilation.html
 
-Note: you may need to explicitly point to the directory where numpy.h resides. For example
-export CFLAGS=-I/Library/Frameworks/Python.framework/Versions/Current/lib/python2.6/site-packages/numpy/core/include
-
 Method 2:
 If you do not have cython installed, you can build the extension directly from the cython generated
 pyqcprot.c

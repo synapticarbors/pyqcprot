@@ -1,5 +1,5 @@
 """
-Example code to demonstrate aligning a trajectory to a reference file and
+Example code to demonstrate aligning a trajectory to a reference structure and
 calculating the rmsd using PyQCPROT
 
 Requires MDAnalysis
