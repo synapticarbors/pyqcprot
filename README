@@ -49,8 +49,7 @@ http://docs.cython.org/src/userguide/source_files_and_compilation.html
 
 Method 2:
 If you do not have cython installed, you can build the extension directly from the cython generated
-pyqcprot.c
-$ python setup_nocython.py build_ext --inplace
+pyqcprot.c. This is handled automatically by setup.py.
 
 Example Usage
 =============
