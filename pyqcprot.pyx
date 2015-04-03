@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-#    Author(s) of Original Implementation:     
+#    Author(s) of Original Implementation:
 #                  Douglas L. Theobald
 #                  Department of Biochemistry
 #                  MS 009
@@ -9,7 +9,7 @@
 #                  USA
 #
 #                  dtheobald@brandeis.edu
-#                  
+#
 #                  Pu Liu
 #                  Johnson & Johnson Pharmaceutical Research and Development, L.L.C.
 #                  665 Stockton Drive
@@ -19,7 +19,7 @@
 #                  pliu24@its.jnj.com
 #
 #                  For the original code written in C see:
-#                  http://theobald.brandeis.edu/qcp/ 
+#                  http://theobald.brandeis.edu/qcp/
 #
 #
 #    Author of Python Port:
@@ -27,10 +27,10 @@
 #                  Department of Biological Sciences
 #                  University of Pittsburgh
 #                  Pittsburgh, PA 15260
-#                   
+#
 #                  jla65@pitt.edu
 #
-# 
+#
 #    If you use this QCP rotation calculation method in a publication, please
 #    reference:
 #
@@ -40,25 +40,25 @@
 #      Acta Crystallographica A 61(4):478-480.
 #
 #      Pu Liu, Dmitris K. Agrafiotis, and Douglas L. Theobald (2010)
-#      "Fast determination of the optimal rotational matrix for macromolecular 
+#      "Fast determination of the optimal rotational matrix for macromolecular
 #      superpositions."
-#      J. Comput. Chem. 31, 1561-1563. 
+#      J. Comput. Chem. 31, 1561-1563.
 #
 #
-#    Copyright (c) 2009-2010, Pu Liu and Douglas L. Theobald 
+#    Copyright (c) 2009-2010, Pu Liu and Douglas L. Theobald
 #    Copyright (c) 2011       Joshua L. Adelman
 #    All rights reserved.
 #
-#    Redistribution and use in source and binary forms, with or without modification, are permitted 
+#    Redistribution and use in source and binary forms, with or without modification, are permitted
 #    provided that the following conditions are met:
 #
-#    * Redistributions of source code must retain the above copyright notice, this list of 
+#    * Redistributions of source code must retain the above copyright notice, this list of
 #      conditions and the following disclaimer.
-#    * Redistributions in binary form must reproduce the above copyright notice, this list 
-#      of conditions and the following disclaimer in the documentation and/or other materials 
+#    * Redistributions in binary form must reproduce the above copyright notice, this list
+#      of conditions and the following disclaimer in the documentation and/or other materials
 #      provided with the distribution.
-#    * Neither the name of the <ORGANIZATION> nor the names of its contributors may be used to 
-#      endorse or promote products derived from this software without specific prior written 
+#    * Neither the name of the <ORGANIZATION> nor the names of its contributors may be used to
+#      endorse or promote products derived from this software without specific prior written
 #      permission.
 #
 #    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -85,17 +85,17 @@ cdef extern from "math.h":
     double fabs(double x)
 
 @cython.boundscheck(False)
-@cython.wraparound(False)    
-def InnerProduct(np.ndarray[np.float64_t,ndim=1] A, 
+@cython.wraparound(False)
+def InnerProduct(np.ndarray[np.float64_t,ndim=1] A,
                  np.ndarray[np.float64_t,ndim=2] coords1,
                  np.ndarray[np.float64_t,ndim=2] coords2,
-                 int N, 
+                 int N,
                  np.ndarray[np.float64_t,ndim=1] weight):
     """
     Calculate the inner product of two structures.
     If weight array is not None, calculate the weighted inner product.
 
-            Input: 
+            Input:
                    A[9]    -- inner product array (modified in place)
                    coords1 -- reference structure
                    coords2 -- candidate structure
@@ -107,40 +107,40 @@ def InnerProduct(np.ndarray[np.float64_t,ndim=1] A,
                     (G1 + G2) * 0.5; used as E0 in function 'FastCalcRMSDAndRotation'
 
             Warning:
-                1. You MUST center the structures, coords1 and coords2, before calling this function. 
+                1. You MUST center the structures, coords1 and coords2, before calling this function.
 
-                2. Please note how the structure coordinates are stored as 3xN arrays, 
-                   not Nx3 arrays as is also commonly used. The difference is 
+                2. Please note how the structure coordinates are stored as 3xN arrays,
+                   not Nx3 arrays as is also commonly used. The difference is
                    something like this for storage of a structure with 8 atoms:
 
                Nx3: xyzxyzxyzxyzxyzxyzxyzxyz
                3xN: xxxxxxxxyyyyyyyyzzzzzzzz
-    
+
     """
-    
+
     cdef double          x1, x2, y1, y2, z1, z2
     cdef unsigned int    i
     cdef double          G1, G2
-    
+
     G1 = 0.0
     G2 = 0.0
 
     A[0] = A[1] = A[2] = A[3] = A[4] = A[5] = A[6] = A[7] = A[8] = 0.0
-    
-    if (weight != None):
+
+    if (weight is not None):
         for i in xrange(N):
             x1 = weight[i] * coords1[0,i]
             y1 = weight[i] * coords1[1,i]
             z1 = weight[i] * coords1[2,i]
-    
+
             G1 += x1*coords1[0,i] + y1*coords1[1,i] + z1*coords1[2,i]
 
             x2 = coords2[0,i]
             y2 = coords2[1,i]
             z2 = coords2[2,i]
-            
+
             G2 += weight[i] * (x2*x2 + y2*y2 + z2*z2)
-            
+
             A[0] +=  (x1 * x2)
             A[1] +=  (x1 * y2)
             A[2] +=  (x1 * z2)
@@ -152,7 +152,7 @@ def InnerProduct(np.ndarray[np.float64_t,ndim=1] A,
             A[6] +=  (z1 * x2)
             A[7] +=  (z1 * y2)
             A[8] +=  (z1 * z2)
-        
+
     else:
         for i in xrange(N):
             x1 = coords1[0,i]
@@ -178,11 +178,11 @@ def InnerProduct(np.ndarray[np.float64_t,ndim=1] A,
             A[6] +=  (z1 * x2)
             A[7] +=  (z1 * y2)
             A[8] +=  (z1 * z2)
-            
+
     return (G1 + G2) * 0.5
 
 @cython.boundscheck(False)
-@cython.wraparound(False)     
+@cython.wraparound(False)
 def FastCalcRMSDAndRotation(np.ndarray[np.float64_t,ndim=1] rot, np.ndarray[np.float64_t,ndim=1] A, double E0, int N):
     """
     Calculate the RMSD, and/or the optimal rotation matrix.
@@ -195,10 +195,10 @@ def FastCalcRMSDAndRotation(np.ndarray[np.float64_t,ndim=1] rot, np.ndarray[np.f
             Output:
                     rot[9]   -- the rotation matrix in the order of xx, xy, xz, yx, yy, yz, zx, zy, zz
                     rmsd     -- the RMSD value
-            Return: 
+            Return:
                     only the rmsd was calculated if rot is None
                     both the RMSD & rotational matrix calculated if rot is not None
-    
+
     """
     cdef double rmsd
     cdef double Sxx, Sxy, Sxz, Syx, Syy, Syz, Szx, Szy, Szz
@@ -206,23 +206,23 @@ def FastCalcRMSDAndRotation(np.ndarray[np.float64_t,ndim=1] rot, np.ndarray[np.f
     cdef double SyzSzymSyySzz2, Sxx2Syy2Szz2Syz2Szy2, Sxy2Sxz2Syx2Szx2,
     cdef double SxzpSzx, SyzpSzy, SxypSyx, SyzmSzy,
     cdef double SxzmSzx, SxymSyx, SxxpSyy, SxxmSyy
-    
+
     cdef np.ndarray[np.float64_t,ndim=1] C = np.zeros(4,)
     cdef unsigned int i
-    cdef double mxEigenV 
+    cdef double mxEigenV
     cdef double oldg = 0.0
     cdef double b, a, delta, rms, qsqr
     cdef double q1, q2, q3, q4, normq
     cdef double a11, a12, a13, a14, a21, a22, a23, a24
     cdef double a31, a32, a33, a34, a41, a42, a43, a44
-    cdef double a2, x2, y2, z2 
-    cdef double xy, az, zx, ay, yz, ax 
-    cdef double a3344_4334, a3244_4234, a3243_4233, a3143_4133,a3144_4134, a3142_4132 
+    cdef double a2, x2, y2, z2
+    cdef double xy, az, zx, ay, yz, ax
+    cdef double a3344_4334, a3244_4234, a3243_4233, a3143_4133,a3144_4134, a3142_4132
     cdef double evecprec = 1e-6
     cdef double evalprec = 1e-14
-    
+
     cdef double a1324_1423, a1224_1422, a1223_1322, a1124_1421, a1123_1321, a1122_1221
-    Sxx = A[0] 
+    Sxx = A[0]
     Sxy = A[1]
     Sxz = A[2]
     Syx = A[3]
@@ -278,14 +278,14 @@ def FastCalcRMSDAndRotation(np.ndarray[np.float64_t,ndim=1] rot, np.ndarray[np.f
         if (fabs(mxEigenV - oldg) < fabs((evalprec)*mxEigenV)):
             break
 
-    #if (i == 50): 
+    #if (i == 50):
     #   print "\nMore than %d iterations needed!\n" % (i)
 
     # the fabs() is to guard against extremely small, but *negative* numbers due to floating point error
     rms = sqrt(fabs(2.0 * (E0 - mxEigenV)/N))
 
-    if (rot == None): 
-        return rms # Don't bother with rotation. 
+    if (rot is None):
+        return rms # Don't bother with rotation.
 
     a11 = SxxpSyy + Szz-mxEigenV; a12 = SyzmSzy; a13 = - SxzmSzx; a14 = SxymSyx
     a21 = SyzmSzy; a22 = SxxmSyy - Szz-mxEigenV; a23 = SxypSyx; a24= SxzpSzx
@@ -301,10 +301,10 @@ def FastCalcRMSDAndRotation(np.ndarray[np.float64_t,ndim=1] rot, np.ndarray[np.f
 
     qsqr = q1 * q1 + q2 * q2 + q3 * q3 + q4 * q4
 
-# The following code tries to calculate another column in the adjoint matrix when the norm of the 
+# The following code tries to calculate another column in the adjoint matrix when the norm of the
 #   current column is too small.
 #   Usually this commented block will never be activated.  To be absolutely safe this should be
-#   uncommented, but it is most likely unnecessary.  
+#   uncommented, but it is most likely unnecessary.
 
     if (qsqr < evecprec):
         q1 =  a12*a3344_4334 - a13*a3244_4234 + a14*a3243_4233
@@ -314,7 +314,7 @@ def FastCalcRMSDAndRotation(np.ndarray[np.float64_t,ndim=1] rot, np.ndarray[np.f
         qsqr = q1*q1 + q2 *q2 + q3*q3+q4*q4
 
         if (qsqr < evecprec):
-            a1324_1423 = a13 * a24 - a14 * a23 
+            a1324_1423 = a13 * a24 - a14 * a23
             a1224_1422 = a12 * a24 - a14 * a22
             a1223_1322 = a12 * a23 - a13 * a22
             a1124_1421 = a11 * a24 - a14 * a21
@@ -374,13 +374,13 @@ def FastCalcRMSDAndRotation(np.ndarray[np.float64_t,ndim=1] rot, np.ndarray[np.f
 
 def CalcRMSDRotationalMatrix(np.ndarray[np.float64_t,ndim=2] ref,
                              np.ndarray[np.float64_t,ndim=2] conf,
-                             int N, 
-                             np.ndarray[np.float64_t,ndim=1] rot, 
+                             int N,
+                             np.ndarray[np.float64_t,ndim=1] rot,
                              np.ndarray[np.float64_t,ndim=1] weights):
     """
     Calculate the RMSD & rotational matrix.
 
-            Input: 
+            Input:
                    ref     -- reference structure
                    conf    -- candidate structure
                    N       -- the size of the system
@@ -391,15 +391,15 @@ def CalcRMSDRotationalMatrix(np.ndarray[np.float64_t,ndim=2] ref,
             Return:
                    RMSD value
 
-    
+
     """
     cdef double E0, rmsd
     cdef np.ndarray[np.float64_t,ndim=1] A = np.zeros(9,)
-    
+
     E0 = InnerProduct(A,conf,ref,N,weights)
     rmsd = FastCalcRMSDAndRotation(rot,A,E0,N)
-      
+
     return rmsd
 
-            
-      
+
+
