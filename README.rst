@@ -5,7 +5,7 @@
 * Author:   Joshua L. Adelman, University of Pittsburgh 
 * Contact:  jla65@pitt.edu
 
-PyQCPROT is a python/cython implementation of `Douglas Theobald's QCP
+PyQCPROT is a python/cython implementation of Douglas Theobald's `QCP
 method`_ for calculating the minimum RMSD between two structures and
 determining the optimal least-squares rotation matrix.
 
@@ -24,7 +24,7 @@ please reference [Theobald2005]_ and [Liu2010]_:
       J. Comput. Chem. 31, 1561-1563. 
 
 
-.. _`Douglas Theobald's QCP method`_: http://theobald.brandeis.edu/qcp/
+.. _`QCP method`: http://theobald.brandeis.edu/qcp/
 
 
 License
@@ -42,9 +42,10 @@ Installation
 ============
 
 This module requires:
-* numpy_
-* cython_ (optional)
-* gcc_
+
+- numpy_
+- cython_ (optional)
+- gcc_
 
 .. _numpy: http://numpy.scipy.org/
 .. _cython: http://cython.org/
@@ -54,7 +55,9 @@ This module requires:
 Method 1:
 ~~~~~~~~~
 
-To compile the extension in the directory in which ``qcprot.pyx`` resides::
+To compile the extension in the directory in which ``qcprot.pyx``
+resides::
+
    python setup.py build_ext --inplace
 
 Further information on `compiling cython extensions`_ is available in 
@@ -68,8 +71,8 @@ Method 2
 ~~~~~~~~
 
 If you do not have `cython`_ installed, you can build the extension
-directly from the cython generated pyqcprot.c. This is handled
-automatically by setup.py.
+directly from the cython generated ``pyqcprot.c``. This is handled
+automatically by ``setup.py``.
 
 
 Example Usage
